@@ -5,6 +5,7 @@
 #include <math.h>
 # define M_PI           3.14159265358979323846  /* pi */
 #include <vector>
+
 using namespace std;
 
 void runge_kutta (string voltage_type, double amp, double freq, double phase, double offset, double R, double C)
@@ -32,11 +33,7 @@ void runge_kutta (string voltage_type, double amp, double freq, double phase, do
         }
     //if (voltage_type = "square)
       //  voltage = offset + amp* //what is SIGN fn in C++?
-        else 
-        {   
-            cout << "Voltage type is not valid." << endl; //function should stop running
-//            return 0;
-        }
+        
         
         K_1 = (voltage)/(R - q)/(R*C);
         K_2 = (voltage_h2)/(R -(q + K_1*(H/2)))/(R*C);
@@ -51,6 +48,5 @@ void runge_kutta (string voltage_type, double amp, double freq, double phase, do
         time.push_back(t);
     }
     
-    
-    
 }
+
