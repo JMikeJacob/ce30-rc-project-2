@@ -11,7 +11,7 @@ using namespace std;
 void runge_kutta (string voltage_type, double amp, double freq, double phase, double offset, double R, double C)
 {
     vector<double> v_in, v_out;
-    vector<int> time;
+    vector<int> sec;
     double voltage, t, H, K_1, K_2, K_3, K_4, voltage_out, voltage_h2, voltage_h, q; 
     // voltage_h2 is voltage(t + H/2) while voltage_h voltage(t+H)
     H = 0.000125;
@@ -45,7 +45,7 @@ void runge_kutta (string voltage_type, double amp, double freq, double phase, do
         
         v_in.push_back(voltage);
         v_out.push_back(voltage_out);
-        time.push_back(t);
+        sec.push_back(t);
     }
     
 }
