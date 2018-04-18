@@ -1,335 +1,148 @@
 #include <iostream>
-#include <array>
 #include <cstdlib>
 #include <string>
+#include "waveform.h"
+#include "simulation.h"
 
 using namespace std;
 
-class InputVoltage{
-public:
-    string type;
-    double amp, freq, phase, offset;
-    int counts=0;
-    bool invalidvoltChecker=false;
+void runInterface();
+void printInterface(Wave*, RCSimulation, int);
 
-    double inputData()
+void runInterface()
+{
+  int waveCount = 0, size = 20;
+  bool addBool = true, editBool = false, quitBool = false;
+  string choice = "";
+  int waveChoice = -1;
+  
+  Wave* Voltage = new Wave[size];
+  RCSimulation Sim;
+  
+  cout << "Input Parameters:\n";
+  Sim.inputRC();
+  cout << "\nInput Voltage 1:\n";
+  Voltage[0].inputData();
+  do
+  {
+    cout << "Add another voltage source (Y/N)? ";
+    cin >> choice;
+    cin.clear();
+    if(choice=="Y" || choice=="y")
     {
-        cout<< "\n|INPUT VOLTAGE|"<< endl;
-        do{
-            cout<< "Input waveform type (Choices are sinusoidal, square, or triangular): ";
-            cin>> type;
-            cin.clear();
-            if((type == "sinusoidal") || (type == "square") || (type == "triangular") || (type == "Sinusoidal") || (type == "Square") || (type == "Triangular"))
+      waveCount++;
+      cout << "\nInput Voltage " << waveCount+1 << ":\n";
+      Voltage[waveCount].inputData();
+    }
+    else if(choice == "N" || choice == "n")
+    {
+      addBool = false;
+    }
+  } while(addBool); 
+  do
+  {
+    system("CLS");
+    cout << "Simulation Parameters:\n\n";
+    Sim.printParam();
+    for(int i = 0; i <= waveCount; i++)
+    {
+      cout << "\nInput Voltage " << i+1 << ":\n";
+      Voltage[i].printData(); 
+    }
+    
+    choice = "";
+    waveChoice = -1;
+    editBool = true;
+    addBool = true;
+    
+    cout << "\nChoose operation:";
+    cout << "\n(a) Start Simulation\n(b) Edit Input Voltages";
+    cout << "\n(c) Edit Resistance\n(d) Edit Capacitance\n(e) Quit\n";
+    cout << "\nChoice: ";
+    cin >> choice;
+    cin.clear();
+    if(choice == "A" || choice == "a")
+    {
+      //simulation proper 
+    }
+    else if(choice == "B" || choice == "b")
+    {
+      do
+      {
+        system("CLS");
+        cout << "Editing Input Voltages\n";
+        for(int i = 0; i <= waveCount; i++)
+        {
+          cout << "\nInput Voltage " << i+1 << ":\n";
+          Voltage[i].printData();
+        } 
+        addBool = true;
+        cout << endl << "Choose Voltage (Input 0 if done): ";
+        cin >> waveChoice;
+        if(waveChoice == 0)
+        {
+          editBool = false;
+        }
+        else if(waveChoice <= waveCount + 1 && waveChoice > 0)
+        {
+          do
+          {
+            system("CLS");
+            cout << "\nEditing Input Voltage " << waveChoice << endl;
+            Voltage[waveChoice-1].printData();
+            cout<<"\nEdit which parameter?\n(a) Type\n(b) Amplitude";
+            cout<<"\n(c) Frequency\n(d) Phase Angle\n(e) DC Offset";
+            cout << "\n(f) None";
+            cout<<"\nChoice: ";
+            cin >> choice;
+            if(choice == "a" || choice == "A")
             {
-                invalidvoltChecker=false;
+              Voltage[waveChoice-1].editType();
             }
-            else
+            else if(choice == "b" || choice == "B")
             {
-                cout<< "Invalid input!"<< endl;
-                invalidvoltChecker=true;
+              Voltage[waveChoice-1].editAmp();  
             }
-        }while(invalidvoltChecker==true);
-        cout<< "Input amplitude: ";
-        cin>> amp;
-        cin.clear();
-        cout<< "Input frequency: ";
-        cin>> freq;
-        cin.clear();
-        cout<< "Input phase: ";
-        cin>> phase;
-        cin.clear();
-        cout<< "Input DC offset: ";
-        cin>> offset;
-        cin.clear();
-    }
-    double editType()
-    {
-         do{
-            cout<< "Input waveform type (Choices are sinusoidal, square, or triangular): ";
-            cin>> type;
-            cin.clear();
-            if((type == "sinusoidal") || (type == "square") || (type == "triangular") || (type == "Sinusoidal") || (type == "Square") || (type == "Triangular"))
+            else if(choice == "c" || choice == "C")
             {
-                invalidvoltChecker=false;
+              Voltage[waveChoice-1].editFreq(); 
             }
-            else
+            else if(choice == "d" || choice == "D")
             {
-                cout<< "Invalid input!";
-                invalidvoltChecker=true;
+              Voltage[waveChoice-1].editPhase(); 
             }
-        }while(invalidvoltChecker==true);
+            else if(choice == "e" || choice == "E")
+            {
+              Voltage[waveChoice-1].editDCOff(); 
+            }
+            else if(choice == "f" || choice == "F")
+            {
+              addBool = false; 
+            }
+          } while(addBool);
+        } 
+      } while(editBool);
     }
-    double editAmp()
+    else if(choice == "C" || choice == "c")
     {
-        cout<< "Input amplitude: ";
-        cin>> amp;
-        cin.clear();
+      Sim.editR();  
     }
-    double editFreq()
+    else if(choice == "D" || choice == "d")
     {
-        cout<< "Input frequency: ";
-        cin>> freq;
-        cin.clear();
+      Sim.editC(); 
     }
-    double editPhase()
+    else if(choice == "E" || choice == "e")
     {
-        cout<< "Input phase: ";
-        cin>> phase;
-        cin.clear();
+      quitBool = true; 
     }
-    double editDCOff()
-    {
-        cout<< "Input DC offset: ";
-        cin>> offset;
-        cin.clear();
-    }
-    void printData()
-    {
-        cout<< "Type: "<< type<< endl;
-        cout<< "Amplitude: " << amp<< endl;
-        cout<< "Frequency: " << freq<< endl;
-        cout<< "Phase: "<< phase<< endl;
-        cout<< "DC Offset: "<< offset<< endl;
-        return;
-    }
+  } while(!quitBool);
+  
+  cout << "Program exited." << endl;
+  
+  delete [] Voltage;
+}
 
-};
-
-class RCSimulation{
-public:
-    double resistance, capacitance;
-    double inputRC()
-    {
-        cout<<"Input Resistor value (in Ohms): ";
-        cin>> resistance;
-        cin.clear();
-        cout<<"Input Capacitor value (in Farads): ";
-        cin>> capacitance;
-        cin.clear();
-    }
-    double editR()
-    {
-        cout<<"Input Resistor value (in Ohms): ";
-        cin>> resistance;
-        cin.clear();
-    }
-    double editC()
-    {
-        cout<<"Input Capacitor value (in Farads): ";
-        cin>> capacitance;
-        cin.clear();
-    }
-    void printRC()
-    {
-        cout<< "Resistance (in Ohms): " << resistance<<endl;
-        cout<< "Capacitance (in Farads): " << capacitance << endl;
-    }
-
-
-
-};
 int main()
 {
-    int counts=0, sizer=20, waveformCount=0;
-    bool addBool, editBool, whichEdit, whichWave;
-    string addWave, editData, editChoice, voltEdit;
-    InputVoltage wave[sizer];
-    RCSimulation rcValue;
-    rcValue.inputRC();
-    wave[0].inputData();
-    system("CLS");
-    cout<< "Here are your data inputs!"<< endl;
-    rcValue.printRC();
-    cout<< "\n|INPUT VOLTAGE|"<< endl;
-    wave[0].printData();
-    do
-    {
-        cout<< "\nDo you want to add another waveform?"<<endl << "a. Yes" << "\nb. No" <<endl;
-        cout<<"Answer: ";
-        cin>>addWave;
-        cin.clear();
-        if(addWave=="no" || addWave=="No" || addWave=="b" || addWave=="B" || addWave=="b." || addWave=="B.")
-        {
-            system("CLS");
-            cout<< "Thank you! Here is your final input\n"<< endl;
-            rcValue.printRC();
-            for(int i=0; i<=counts; i++)
-            {
-                cout<< endl;
-                cout<< "Input waveform "<< i+1 << ": "<<endl;
-                wave[i].printData();
-            }
-            addBool=false;
-        }
-        else if(addWave=="yes" || addWave=="Yes" || addWave=="a" || addWave=="A" || addWave=="a." || addWave=="A.")
-        {
-            counts++;
-            wave[counts].inputData();
-            system("CLS");
-            cout<< "Here are your data inputs!\n"<< endl;
-            rcValue.printRC();
-            for(int i=0; i<=counts; i++)
-            {
-                cout<< endl;
-                cout<< "Input waveform "<< i+1 << ": "<<endl;
-                wave[i].printData();
-            }
-            addBool=true;
-        }
-        else
-        {
-            cout<<"Invalid input! Choose between yes and no only"<<endl;
-            system("PAUSE");
-            system("CLS");
-        }
-    }while(addBool==true);
-
-    do
-    {
-        cout<< "\nDo you want to edit your data?"<<endl << "a. Yes" << "\nb. No" <<endl;
-        cout<<"Answer: ";
-        cin>>editData;
-        cin.clear();
-        if(editData=="no" || editData=="No" || editData=="b" || editData=="B" || editData=="b." || editData=="B.")
-        {
-            editBool=false;
-            cout<< "\nThank you for using this program!"<< endl;
-            return 0;
-        }
-        if(editData=="yes" || editData=="Yes" || editData=="a" || editData=="A" || editData=="A." || editData=="a.")
-        {
-           editBool=true;
-           do{
-            cout<<"\nWhich part would you like to edit?"<<endl<<"a. Voltage\nb. Resistance\nc. Capacitance\nd. None"<< endl;
-            cout<<"Answer: ";
-            cin>> editChoice;
-            cin.clear();
-            if (editChoice=="Voltage" || editChoice=="voltage" || editChoice=="a" || editChoice=="A")
-            {
-                whichEdit==true;
-                do{
-                    cout<<"\nWhich waveform?" <<endl<<"Choices: " <<endl;
-                    for(int k=0; k<=counts; k++)
-                    {
-                        cout<< "- Input waveform "<< k+1<< endl;
-                    }
-                    cout<<"Answer: ";
-                    cin>> waveformCount;
-                    cin.clear();
-                    if(waveformCount<= counts+1)
-                    {
-                        whichWave=true;
-                    }
-                    else
-                    {
-                        cout<< "Invalid input!"<< endl;
-                        whichWave=false;
-                    }
-                }while(whichWave==false);
-                cout<<"\nWhich parameter/s?" <<endl<< "Choices: " <<endl;
-                cout<<"A. Type"<<endl;
-                cout<<"B. Amplitude"<<endl;
-                cout<<"C. Frequency"<<endl;
-                cout<<"D. Phase"<<endl;
-                cout<<"E. DC Offset" << endl;
-                do{
-                    cout<< "Answer (input 0 if done): ";
-                    cin>> voltEdit;
-                    cin.clear();
-                        if(voltEdit=="A" || voltEdit=="a")
-                        {
-                            wave[waveformCount-1].editType();
-                        }
-                        else if(voltEdit=="B" || voltEdit=="b")
-                        {
-                            wave[waveformCount-1].editAmp();
-                        }
-                        else if(voltEdit=="C" || voltEdit=="c")
-                        {
-                            wave[waveformCount-1].editFreq();
-                        }
-                        else if(voltEdit=="D" || voltEdit=="d")
-                        {
-                            wave[waveformCount-1].editPhase();
-                        }
-                        else if (voltEdit=="E" || voltEdit=="e")
-                        {
-                            wave[waveformCount-1].editDCOff();
-                        }
-                        else if(voltEdit=="0")
-                        {
-
-                        }
-                        else
-                        {
-                            cout<<"Invalid input! Input letters A, B, C, D, or E only"<<endl;
-                        }
-                }while(voltEdit!="0");
-
-                system("CLS");
-                cout<< "Thank you! Here is your final input\n"<< endl;
-                rcValue.printRC();
-                for(int i=0; i<=counts; i++)
-                {
-                    cout<< endl;
-                    cout<< "Input waveform "<< i+1 << ": "<<endl;
-                    wave[i].printData();
-                }
-            }
-            else if (editChoice=="Resistance" || editChoice=="resistance" || editChoice=="b" || editChoice=="B")
-            {
-                whichEdit==true;
-                rcValue.editR();
-                system("CLS");
-                cout<< "Thank you! Here is your final input\n"<< endl;
-                rcValue.printRC();
-                for(int i=0; i<=counts; i++)
-                {
-                    cout<< endl;
-                    cout<< "Input waveform "<< i+1 << ": "<<endl;
-                    wave[i].printData();
-                }
-            }
-            else if (editChoice=="Capacitance" || editChoice=="capacitance" || editChoice=="c" || editChoice=="C")
-            {
-                whichEdit==true;
-                rcValue.editC();
-                system("CLS");
-                cout<< "Thank you! Here is your final input\n"<< endl;
-                rcValue.printRC();
-                for(int i=0; i<=counts; i++)
-                {
-                    cout<< endl;
-                    cout<< "Input waveform "<< i+1 << ": "<<endl;
-                    wave[i].printData();
-                }
-            }
-            else if(editChoice=="None" || editChoice=="none" || editChoice=="d" || editChoice=="D")
-            {
-                whichEdit=true;
-                system("CLS");
-                cout<< "Thank you! Here is your final input\n"<< endl;
-                rcValue.printRC();
-                for(int i=0; i<=counts; i++)
-                {
-                    cout<< endl;
-                    cout<< "Input waveform "<< i+1 << ": "<<endl;
-                    wave[i].printData();
-                }
-            }
-            else
-            {
-                whichEdit=false;
-                cout<<"\nInvalid input!"<<endl;
-            }
-           }while(whichEdit==false);
-        }
-        else
-        {
-            whichEdit=true;
-            cout<<"\nInvalid input!"<<endl;
-        }
-
-    }while(editBool==true);
-    return 0;
+  runInterface();
 }
