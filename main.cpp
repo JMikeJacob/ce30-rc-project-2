@@ -42,13 +42,7 @@ void runInterface()
   do
   {
     system("CLS");
-    cout << "Simulation Parameters:\n\n";
-    Sim.printParam();
-    for(int i = 0; i <= waveCount; i++)
-    {
-      cout << "\nInput Voltage " << i+1 << ":\n";
-      Voltage[i].printData(); 
-    }
+    printInterface(Voltage, Sim, waveCount); 
     
     choice = "";
     waveChoice = -1;
@@ -140,6 +134,17 @@ void runInterface()
   cout << "Program exited." << endl;
   
   delete [] Voltage;
+}
+
+void printInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
+{
+  cout << "Simulation Parameters:\n\n";
+  Sim.printParam();
+  for(int i = 0; i <= waveCount; i++)
+  {
+    cout << "\nInput Voltage " << i+1 << ":\n";
+    Voltage[i].printData(); 
+  }
 }
 
 int main()
