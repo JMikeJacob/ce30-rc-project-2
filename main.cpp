@@ -8,6 +8,7 @@ using namespace std;
 
 void runInterface();
 void printInterface(Wave*, RCSimulation, int);
+void simInterface(Wave*, RCSimulation, int);
 
 void runInterface()
 {
@@ -57,7 +58,7 @@ void runInterface()
     cin.clear();
     if(choice == "A" || choice == "a")
     {
-      //simulation proper 
+      simInterface(Voltage, Sim, waveCount);
     }
     else if(choice == "B" || choice == "b")
     {
@@ -73,6 +74,7 @@ void runInterface()
         addBool = true;
         cout << endl << "Choose Voltage (Input 0 if done): ";
         cin >> waveChoice;
+        cin.clear();
         if(waveChoice == 0)
         {
           editBool = false;
@@ -89,6 +91,7 @@ void runInterface()
             cout << "\n(f) None";
             cout<<"\nChoice: ";
             cin >> choice;
+            cin.clear();
             if(choice == "a" || choice == "A")
             {
               Voltage[waveChoice-1].editType();
@@ -144,6 +147,24 @@ void printInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
   {
     cout << "\nInput Voltage " << i+1 << ":\n";
     Voltage[i].printData(); 
+  }
+}
+
+void simInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
+{
+  string save = "";
+  double endTime = 0;
+  Sim.clearVectors();
+  cout << "Simulation end time (in seconds): ";
+  cin >> endTime;
+  Sim.runge_kutta(Voltage, waveCount, endTime);
+  system("CLS");
+  Sim.printGraph();
+  cout << "Save results to file (Y/N)? ";
+  cin >> save;
+  if(save == "Y" || save == "y")
+  {
+    Sim.saveToFile(Voltage, waveCount); 
   }
 }
 
