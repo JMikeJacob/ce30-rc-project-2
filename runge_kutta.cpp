@@ -10,9 +10,9 @@ using namespace std;
 double sign (double x)
 {
     double epsilon = 1e-16;
-    if (x > 0) return 1;
-    if (x < 0) return -1;
-    if (fabs(x) < epsilon) return 0;
+    if (x > epsilon) return 1;
+    if (x < (-1)*epsilon) return -1;
+    else return 0;
 }
 
 void runge_kutta (string voltage_type, double amp, double freq, double phase, double offset, double R, double C)
