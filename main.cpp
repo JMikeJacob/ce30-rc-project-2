@@ -1,14 +1,14 @@
 #include <iostream>
-#include <cstdlib>
-#include <string>
+#include <cstdlib> //system("CLS")
+#include <string> 
 #include "waveform.h"
 #include "simulation.h"
 
 using namespace std;
 
-void runInterface();
-void printInterface(Wave*, RCSimulation, int);
-void simInterface(Wave*, RCSimulation, int);
+void runInterface(); //mainframe for interface
+void printInterface(Wave*, RCSimulation, int); //parameters
+void simInterface(Wave*, RCSimulation, int); //simulation proper
 
 void runInterface()
 {
@@ -17,33 +17,33 @@ void runInterface()
   string choice = "";
   int waveChoice = -1;
   
-  Wave* Voltage = new Wave[size];
-  RCSimulation Sim;
+  Wave* Voltage = new Wave[size]; //array of Voltage wave objects
+  RCSimulation Sim; //Sim object containing simulation functions
   
   cout << "Input Parameters:\n";
-  Sim.inputRC();
+  Sim.inputRC(); //input R and C values
   cout << "\nInput Voltage 1:\n";
-  Voltage[0].inputData();
+  Voltage[0].inputData(); //input first voltage waveform
   do
-  {
+  {//loops asking if the user wants to add another voltage
     cout << "Add another voltage source (Y/N)? ";
     cin >> choice;
     cin.clear();
     if(choice=="Y" || choice=="y")
     {
-      waveCount++;
+      waveCount++;//increments voltage source count
       cout << "\nInput Voltage " << waveCount+1 << ":\n";
-      Voltage[waveCount].inputData();
+      Voltage[waveCount].inputData(); //input nth voltage wave
     }
     else if(choice == "N" || choice == "n")
     {
-      addBool = false;
+      addBool = false; //bool to terminate loop
     }
   } while(addBool); 
   do
-  {
+  { //main menu
     system("CLS");
-    printInterface(Voltage, Sim, waveCount); 
+    printInterface(Voltage, Sim, waveCount); //prints parameters
     
     choice = "";
     waveChoice = -1;
@@ -56,24 +56,24 @@ void runInterface()
     cout << "\n(e) Edit Capacitance\n(f) Quit\n\nChoice: ";
     cin >> choice;
     cin.clear();
-    if(choice == "A" || choice == "a")
+    if(choice == "A" || choice == "a") //Start Simulation
     {
-      simInterface(Voltage, Sim, waveCount);
+      simInterface(Voltage, Sim, waveCount); //simulation proper
     }
-    else if(choice == "B" || choice == "b")
+    else if(choice == "B" || choice == "b") //adds another voltage
     {
       waveCount++;
       cout << "\nInput Voltage " << waveCount+1 << ":\n";
       Voltage[waveCount].inputData(); 
     }
-    else if(choice == "C" || choice == "c")
+    else if(choice == "C" || choice == "c") //edits existing voltages
     {
-      do
+      do //loops until user decides to finish by entering 0
       {
         system("CLS");
         cout << "Editing Input Voltages\n";
         for(int i = 0; i <= waveCount; i++)
-        {
+        { //prints existing voltage information
           cout << "\nInput Voltage " << i+1 << ":\n";
           Voltage[i].printData();
         } 
@@ -87,8 +87,8 @@ void runInterface()
         }
         else if(waveChoice <= waveCount + 1 && waveChoice > 0)
         {
-          do
-          {
+          do //loops until user decides to finish editing
+          {  //the current waveform
             system("CLS");
             cout << "\nEditing Input Voltage " << waveChoice << endl;
             Voltage[waveChoice-1].printData();
@@ -98,27 +98,27 @@ void runInterface()
             cout<<"\nChoice: ";
             cin >> choice;
             cin.clear();
-            if(choice == "a" || choice == "A")
+            if(choice == "a" || choice == "A")//edit type
             {
               Voltage[waveChoice-1].editType();
             }
-            else if(choice == "b" || choice == "B")
+            else if(choice == "b" || choice == "B")//edit amplitude
             {
               Voltage[waveChoice-1].editAmp();  
             }
-            else if(choice == "c" || choice == "C")
+            else if(choice == "c" || choice == "C")//edit frequency
             {
               Voltage[waveChoice-1].editFreq(); 
             }
-            else if(choice == "d" || choice == "D")
+            else if(choice == "d" || choice == "D")//edit phase angle
             {
               Voltage[waveChoice-1].editPhase(); 
             }
-            else if(choice == "e" || choice == "E")
+            else if(choice == "e" || choice == "E")//edit DC offset
             {
               Voltage[waveChoice-1].editDCOff(); 
             }
-            else if(choice == "f" || choice == "F")
+            else if(choice == "f" || choice == "F")//done editing
             {
               addBool = false; 
             }
@@ -126,15 +126,15 @@ void runInterface()
         } 
       } while(editBool);
     }
-    else if(choice == "D" || choice == "d")
+    else if(choice == "D" || choice == "d") //edit resistance
     {
       Sim.editR();  
     }
-    else if(choice == "E" || choice == "e")
+    else if(choice == "E" || choice == "e") //edit capacitance
     {
       Sim.editC(); 
     }
-    else if(choice == "F" || choice == "f")
+    else if(choice == "F" || choice == "f") //quit program
     {
       quitBool = true; 
     }
@@ -142,14 +142,14 @@ void runInterface()
   
   cout << "Program exited." << endl;
   
-  delete [] Voltage;
+  delete [] Voltage; //deallocates Voltage array
 }
 
 void printInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
-{
+{//function to print out all simulation parameters
   cout << "Simulation Parameters:\n\n";
-  Sim.printParam();
-  for(int i = 0; i <= waveCount; i++)
+  Sim.printParam(); //print R and C
+  for(int i = 0; i <= waveCount; i++) //print input voltages
   {
     cout << "\nInput Voltage " << i+1 << ":\n";
     Voltage[i].printData(); 
@@ -157,23 +157,25 @@ void printInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
 }
 
 void simInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
-{
+{//menu for simulation proper
   string save = "";
-  double endTime = 0;
+  double endTime = 0, initCharge = 0;
   Sim.clearVectors();
   cout << "Simulation end time (in seconds): ";
-  cin >> endTime;
-  Sim.runge_kutta(Voltage, waveCount, endTime);
-  while(1)
+  cin >> Sim.endTime; //asks for end time of simulation endTime
+  cout << "Initial conditions of charge q at t = 0 (default at 0): ";
+  cin >> Sim.initCharge; //asks for initial conditions
+  Sim.runge_kutta(Voltage, waveCount);
+  while(1) //loops until correct choice is made
   {
     cout << "Save results to file (Y/N)? ";
     cin >> save;
-    if(save == "Y" || save == "y")
+    if(save == "Y" || save == "y") //save results to file
     {
       Sim.saveToFile(Voltage, waveCount);
       break; 
     }
-    else if(save == "n" || save == "N")
+    else if(save == "n" || save == "N") //quit sim without saving
     {
       break;
     }
@@ -182,5 +184,5 @@ void simInterface(Wave* Voltage, RCSimulation Sim, int waveCount)
 
 int main()
 {
-  runInterface();
+  runInterface(); //runs program in console
 }
