@@ -75,6 +75,10 @@ void RCSimulation::runge_kutta (Wave* Voltage, int waveCount)
     //input voltages at t, t+H/2, and t+h are summed up
     for(int i = 0; i <= waveCount; i++)
     {
+      if(Voltage[i].enable == false)
+      {
+        continue; 
+      }
       amp = Voltage[i].amp;
       freq = Voltage[i].freq;
       phase = Voltage[i].phase;
@@ -134,6 +138,14 @@ void RCSimulation::saveToFile(Wave* Voltage, int waveCount)
   ofs << "Capacitance, " << capacitance << endl;
   for(int i = 0; i <= waveCount; i++)
   {
+    if(Voltage[i].enable == true)
+    {
+      ofs << "Status,ON" << endl; 
+    }
+    else if(Voltage[i].enable == false)
+    {
+      ofs << "Status,OFF" << endl; 
+    }    
     ofs << "\nInput Voltage " << i + 1 << endl;
     ofs << "Type, " << Voltage[i].type << endl;
     ofs << "Amplitude, " << Voltage[i].amp << endl;

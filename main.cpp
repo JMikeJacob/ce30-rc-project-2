@@ -52,8 +52,9 @@ void runInterface()
     
     cout << "\nChoose operation:";
     cout << "\n(a) Start Simulation\n(b) Add Input Voltage";
-    cout << "\n(c) Edit Input Voltages\n(d) Edit Resistance";
-    cout << "\n(e) Edit Capacitance\n(f) Quit\n\nChoice: ";
+    cout << "\n(c) Delete Input Voltage\n(d) Edit Input Voltages";
+    cout << "\n(e) Edit Resistance\n(f) Edit Capacitance";
+    cout << "\n(g) Quit\n\nChoice: ";
     cin >> choice;
     cin.clear();
     if(choice == "A" || choice == "a") //Start Simulation
@@ -66,7 +67,37 @@ void runInterface()
       cout << "\nInput Voltage " << waveCount+1 << ":\n";
       Voltage[waveCount].inputData(); 
     }
-    else if(choice == "C" || choice == "c") //edits existing voltages
+    else if(choice == "C" || choice == "c")//remove input voltage
+    {
+      if(waveCount > 0)
+      {
+        cout << "Choose voltage to remove (1-" << waveCount+1<<"): ";
+        cin >> waveChoice;
+        cin.ignore(256, '\n');
+        cin.clear();
+        //removes selected voltage by shifting all elements to the
+        //right by one position to the left, replacing the selected
+        //element and decrementing waveCount to prevent access to the
+        //last index before deleting
+        for(int i = waveChoice-1; i < waveCount; i++)
+        {
+          Voltage[i].type = Voltage[i+1].type;
+          Voltage[i].amp = Voltage[i+1].amp;
+          Voltage[i].freq = Voltage[i+1].freq;
+          Voltage[i].phase = Voltage[i+1].phase;
+          Voltage[i].offset = Voltage[i+1].offset;
+        }
+        waveCount--;
+      }
+      else
+      {
+        cout << "Cannot remove the last source!" << endl;
+        cin.get();
+        cin.ignore(256, '\n');
+        cin.clear(); 
+      }
+    }
+    else if(choice == "D" || choice == "d") //edits existing voltages
     {
       do //loops until user decides to finish by entering 0
       {
@@ -94,7 +125,7 @@ void runInterface()
             Voltage[waveChoice-1].printData();
             cout<<"\nEdit which parameter?\n(a) Type\n(b) Amplitude";
             cout<<"\n(c) Frequency\n(d) Phase Angle\n(e) DC Offset";
-            cout << "\n(f) None";
+            cout << "\n(f) Switch On/Off\n(g) None";
             cout<<"\nChoice: ";
             cin >> choice;
             cin.clear();
@@ -118,7 +149,11 @@ void runInterface()
             {
               Voltage[waveChoice-1].editDCOff(); 
             }
-            else if(choice == "f" || choice == "F")//done editing
+            else if(choice == "f" || choice == "F")//edit enable 
+            {
+              Voltage[waveChoice-1].editEnable(); 
+            }
+            else if(choice == "g" || choice == "G")//done editing
             {
               addBool = false; 
             }
@@ -126,15 +161,15 @@ void runInterface()
         } 
       } while(editBool);
     }
-    else if(choice == "D" || choice == "d") //edit resistance
+    else if(choice == "E" || choice == "e") //edit resistance
     {
       Sim.editR();  
     }
-    else if(choice == "E" || choice == "e") //edit capacitance
+    else if(choice == "F" || choice == "f") //edit capacitance
     {
       Sim.editC(); 
     }
-    else if(choice == "F" || choice == "f") //quit program
+    else if(choice == "G" || choice == "g") //quit program
     {
       quitBool = true; 
     }

@@ -11,12 +11,14 @@ class Wave
   public:
     string type;
     double amp, freq, phase, offset;
+    bool enable;
     
     void editType();
     void editAmp();
     void editFreq();
     void editPhase();
     void editDCOff();
+    void editEnable();
     void inputData();
     void printData();
 };

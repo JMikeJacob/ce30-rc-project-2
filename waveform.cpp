@@ -49,6 +49,24 @@ void Wave::editDCOff() //edit DC offset
   cin.clear();
 }
 
+void Wave::editEnable()
+{ //turns the source on or off w/o deleting it
+  int c = -1;
+  do
+  {
+    cout << "Turn voltage source on/off (0 = off, 1 = on): ";
+    cin >> c;
+    if(c == 1 || c == 0)
+    {
+      enable = c;  
+    }
+    else
+    {
+      cout << "Invalid input! 0 or 1 only." << endl; 
+    }
+  } while (c > 1 || c < 0);
+}
+
 void Wave::inputData()
 { //creates new voltage wave by calling all edit functions in one go
   editType();
@@ -56,10 +74,19 @@ void Wave::inputData()
   editFreq();
   editPhase();
   editDCOff();
+  enable = true;
 }
 
 void Wave::printData() //prints waveform parameters
 {
+  if(enable == true)
+  {
+    cout << "Status: ON" << endl; 
+  }
+  else if(enable == false)
+  {
+    cout << "Status: OFF" << endl; 
+  } 
   cout<< "Type: "<< type<< endl;
   cout<< "Amplitude: " << amp<< endl;
   cout<< "Frequency: " << freq<< endl;
