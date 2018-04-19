@@ -4,16 +4,12 @@ void Wave::editType()
 {
   bool invalid = true;
   cout << "Choose waveform type:\n"; 
-  cout << "- sinusoid\n- square\n- triangular\n";
+  cout << "- sinusoidal\n- square\n- triangular\n";
   do
   {
     cout << "Choice: ";
     cin >> type;
     cin.clear();
-    //if(type[0] >= 'A' && type[0] <= 'Z')
-    //{
-      //type[0] -= 'a'; 
-    //}
     if(type=="sinusoidal" || type=="square" || type=="triangular")
     {
       invalid = false;

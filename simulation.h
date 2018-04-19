@@ -10,6 +10,7 @@
 # define M_PI           3.14159265358979323846  /* pi */
 #include <vector>
 #include <iomanip>
+#include <limits>
 #include "waveform.h"
 
 using namespace std;
@@ -26,6 +27,7 @@ class RCSimulation
     void inputRC();
     void printParam();
     double sign(double);
+    double highestFreq(Wave*, int);
     void runge_kutta(Wave*, int, double);
     void printGraph();
     void clearVectors();

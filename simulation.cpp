@@ -34,12 +34,29 @@ double RCSimulation::sign (double x)
     else return 0;
 }
 
+double RCSimulation::highestFreq(Wave* Voltage, int waveCount)
+{
+  double highestFreq = 0.0;
+  for(int i = 0; i <= waveCount; i++)
+  {
+    if(Voltage[i].freq > highestFreq)
+    {
+      highestFreq = Voltage[i].freq;    
+    }
+  }
+  return highestFreq; 
+}
+
 void RCSimulation::runge_kutta (Wave* Voltage, int waveCount, double endTime)
 {
   double voltage, t, H, K_1, K_2, K_3, K_4, voltage_out, voltage_h2, voltage_h, q, square; 
   double amp, freq, phase, offset, R = resistance, C = capacitance;
   // voltage_h2 is voltage(t + H/2) while voltage_h voltage(t+H)
-  H = 0.0000625;
+  H = (1.0/16.0)*(1/highestFreq(Voltage, waveCount));
+  if(endTime/H < 500.0)
+  {
+    H = endTime/500.0; 
+  }
   q = 0;
   points = 0;
   for (double t = 0; t <= endTime; t = t + H)
@@ -61,15 +78,20 @@ void RCSimulation::runge_kutta (Wave* Voltage, int waveCount, double endTime)
       }
       if (Voltage[i].type == "triangular")
       {
-        voltage += ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*t + phase))) + offset;
-        voltage_h2 += ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*(t+(H/2)) + phase))) + offset;
-        voltage_h +=  ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*(t+H) + phase))) + offset;
+        voltage += ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*t + 
+                     phase))) + offset;
+        voltage_h2 += ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*
+                       (t+(H/2)) + phase))) + offset;
+        voltage_h +=  ((2*amp)/(M_PI))*amp*asin(sin((2*(M_PI)*freq*
+                       (t+H) + phase))) + offset;
       }
       if (Voltage[i].type == "square")
       {
         voltage += offset + amp*(sign(sin(2*(M_PI)*freq*t + phase)));
-        voltage_h2 += offset + amp*(sign(sin(2*(M_PI)*freq*(t*(H/2)) + phase)));
-        voltage_h += offset + amp*(sign(sin(2*(M_PI)*freq*(t+H) + phase))); //what is SIGN fn in C++?
+        voltage_h2 += offset + amp*(sign(sin(2*(M_PI)*freq*(t*(H/2)) +
+                      phase)));
+        voltage_h += offset + amp*(sign(sin(2*(M_PI)*freq*
+                     (t+H) + phase)));
       }
     }   
         
@@ -80,7 +102,6 @@ void RCSimulation::runge_kutta (Wave* Voltage, int waveCount, double endTime)
     
     q = q + (K_1 + K_2 + K_3 + K_4)*(H/6);
     voltage_out = R*K_1;
-    cout << "t: " << t << " v_in: " << voltage << " v_out: " << voltage_out << endl;
     v_in.push_back(voltage);
     v_out.push_back(voltage_out);
     sec.push_back(t);
@@ -95,17 +116,6 @@ void RCSimulation::printGraph()
   cout << "     t      |    V_in    |     V_out     |" << endl; 
   for(int i = 0; i < points; i++)
   {
-    /*
-    if(log10(sec[i])>= 8 || log10(sec[i] <= 0.00001) ||
-       log10(v_in[i])>= 8 || log10(v_in[i] <= 0.00001) ||
-       log10(v_out[i])>= 8 || log10(v_out[i] <= 0.00001))
-    {
-      cout << scientific; 
-    } 
-    else
-    {
-      cout << fixed; 
-    }*/
     cout << sec[i] << "|" << v_in[i] << "|" << v_out[i] << endl;
   }
   cout << std::resetiosflags;
@@ -116,30 +126,32 @@ void RCSimulation::saveToFile(Wave* Voltage, int waveCount)
   string filename;
   cout << "Filename: ";
   cin >> filename;
-  
+  filename += ".csv";
   ofstream ofs;
   ofs.open(filename.c_str());
-  ofs << "Simulation Parameters:\n";
-  ofs << "Resistance: " << resistance << endl;
-  ofs << "Capacitance: " << capacitance << endl;
+  ofs << "Simulation Parameters\n";
+  ofs << "Resistance," << resistance << endl;
+  ofs << "Capacitance, " << capacitance << endl;
   for(int i = 0; i <= waveCount; i++)
   {
     ofs << "\nInput Voltage " << i + 1 << endl;
-    ofs << "Type: " << Voltage[i].type;
-    ofs << "Amplitude: " << Voltage[i].amp;
-    ofs << "Frequency: " << Voltage[i].freq;
-    ofs << "Phase Angle: " << Voltage[i].phase;
-    ofs << "DC Offset: " << Voltage[i].offset;
+    ofs << "Type, " << Voltage[i].type << endl;
+    ofs << "Amplitude, " << Voltage[i].amp << endl;
+    ofs << "Frequency, " << Voltage[i].freq << endl;
+    ofs << "Phase Angle, " << Voltage[i].phase << endl;
+    ofs << "DC Offset, " << Voltage[i].offset << endl;
     ofs << endl;
   }
-  ofs << "\nSimulation Results:\n";
+  ofs << "\nSimulation Results\n";
+  ofs << "t,V_in,V_out" << endl;
   for(int i = 0; i < points; i++)
   {
-     
      ofs << sec[i] << "," << v_in[i] << "," << v_out[i] << endl;
   }
   ofs.close();
-  ofs.close();
+  
+  cout << "File saved! Press enter to continue..." << endl;
+  cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
 }
 
 void RCSimulation::clearVectors()

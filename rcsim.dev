@@ -1,7 +1,7 @@
 [Project]
 FileName=rcsim.dev
 Name=rcsim
-UnitCount=3
+UnitCount=5
 PchHead=-1
 PchSource=-1
 Ver=3
@@ -119,7 +119,7 @@ CompilerType=9
 [Unit4]
 FileName=simulation.cpp
 CompileCpp=1
-Folder=
+Folder=rcsim
 Compile=1
 Link=1
 Priority=1000
@@ -129,7 +129,7 @@ BuildCmd=
 [Unit5]
 FileName=simulation.h
 CompileCpp=1
-Folder=
+Folder=rcsim
 Compile=1
 Link=1
 Priority=1000
